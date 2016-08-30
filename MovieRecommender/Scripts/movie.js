@@ -5,8 +5,9 @@ $(document).ready(function () {
     $("#recommendMe").click(function () {
         var userid = $("#userId").val();
         var table = $("#recomMovies").DataTable({
+            "bDestroy": true,
             ajax: {
-                "bDestroy": true,
+                
                 url: "/api/Movies/recommendations/" + userid,
                 dataSrc: ""
             },
