@@ -19,12 +19,16 @@
                     <p style="padding:10px;"></p>
                     <label class="col-sm-1 control-label" for="#userId">User Id:</label>
                     <input class="form-control col-sm-4" type="text" id="userId" />
-                    <button class="col-sm-2 btn btn-success"  type="button">Recommend Me</button>
+                    <button class="col-sm-2 btn btn-success" id="recommendMe"  type="button">Recommend Me</button>
                 </div>
                 <div>
-                    <table class="table">
+                    <table id="recomMovies" class="table table-bordered table-hover">
                         <thead>
-
+                            <tr>
+                                <th>Title</th>
+                                <th>Genre</th>
+                                <th>Year</th>
+                            </tr>
                         </thead>
                         <tbody>
 
@@ -36,11 +40,6 @@
     </div>
 
 </div>
-
-
-
-
-
 
 <div class="row">
     <div class="col-md-3" style="margin-bottom:15px">
@@ -97,3 +96,43 @@
 
     </div>
 </div>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+
+            $("#recommendMe").click(function () {
+                var userid = $("#userId").val();
+                var table = $("#recomMovies").DataTable({
+                    ajax: {
+                        url: "/api/Movies/recommendations/" + userid,
+                        dataSrc: ""
+                    },
+                    columns: [
+                        {
+                            data: "title",
+                            render: function (data, type, recommend) {
+                                return "<a target='_blank' href='http://www.imdb.com/title/tt" + recommend.movieId + "'>" + recommend.title + "</a>";
+                            }
+                        },
+
+                        {
+                            data: "genre",
+                            render: function (data) {
+                                return data;
+                            }
+                        },
+                         {
+                             data: "year",
+                             render: function (data) {
+                                 return data;
+                             }
+                         }
+                    ]
+                });
+            })
+
+        });
+    </script>
+}
