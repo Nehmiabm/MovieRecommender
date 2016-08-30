@@ -5,7 +5,7 @@ using System.Web.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Vidly2
+namespace MovieRecommender
 {
     public static class WebApiConfig
     {
