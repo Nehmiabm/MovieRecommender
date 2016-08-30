@@ -11,7 +11,31 @@
     </ul>
     <div id="myTabContent" class="tab-content">
         <div class="tab-pane fade active in" id="rate">
-            <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
+            <div class="container">
+                <div class="row form-group">
+                    <label class="col-sm-1 control-label" for="uid">User Id:</label>
+                    <input class="form-control col-sm-4" type="text" id="uid"/>
+                </div>
+                <div class="row form-group">
+                   <label class="control-label col-sm-1" for="title">Movie Title:</label>
+                    <input class="form-control col-sm-4" type="text" id="title" />
+                    <button type="button" class="btn btn-success col-sm-1" id="search"><span class="fa fa-search">Search</span></button>
+                </div>
+                <div>
+                    <table id="moviesTable" class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Genre</th>
+                                <th>Year</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+               
+            </div>
         </div>
         <div class="tab-pane fade" id="recommendation">
             <div class="container">
@@ -40,9 +64,6 @@
     </div>
 
 </div>
-
-
-
 @section scripts
 {
 @Scripts.Render("~/bundles/movies")
