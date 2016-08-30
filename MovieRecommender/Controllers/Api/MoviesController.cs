@@ -36,15 +36,16 @@ namespace MovieRecommender.Controllers.Api
                 {
                     cmd.CommandText = "SELECT * FROM movie;";
 
-                    DbDataReader movieDataReaderReader = cmd.ExecuteReader();
+                    DbDataReader movieDataReader = cmd.ExecuteReader();
 
-                    while (movieDataReaderReader.Read())
+                    while (movieDataReader.Read())
                     {
                         Movie m = new Movie();
-                        m.Genre = movieDataReaderReader["genre"].ToString();
-                        m.MovieId = Convert.ToInt32(movieDataReaderReader["movieid"]);
-                        m.Title = movieDataReaderReader["title"].ToString();
-                        m.Year = Convert.ToInt32(movieDataReaderReader["year"]);
+                        m.Genre = movieDataReader["genre"].ToString();
+                        
+                        m.MovieId = Int32.Parse(movieDataReader["movieid"].ToString());
+                        m.Title = movieDataReader["title"].ToString();
+                        m.Year = Int32.Parse(movieDataReader["year"].ToString());
 
                         movies.Add(m);
                     }
@@ -65,17 +66,17 @@ namespace MovieRecommender.Controllers.Api
                 conn.OpenAsync().Wait();
                 using (OdbcCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT * FROM movie where title LIKE '%"+title+"%';";
+                    cmd.CommandText = "SELECT * FROM movie where UPPER(title) LIKE '%" + title.ToUpper()+"%';";
 
-                    DbDataReader movieDataReaderReader = cmd.ExecuteReader();
+                    DbDataReader movieDataReader = cmd.ExecuteReader();
 
-                    while (movieDataReaderReader.Read())
+                    while (movieDataReader.Read())
                     {
                         Movie m = new Movie();
-                        m.Genre = movieDataReaderReader["genre"].ToString();
-                        m.MovieId = Convert.ToInt32(movieDataReaderReader["movieid"]);
-                        m.Title = movieDataReaderReader["title"].ToString();
-                        m.Year = Convert.ToInt32(movieDataReaderReader["year"]);
+                        m.Genre = movieDataReader["genre"].ToString();
+                        m.MovieId = Int32.Parse(movieDataReader["movieid"].ToString());
+                        m.Title = movieDataReader["title"].ToString();
+                        m.Year = Int32.Parse(movieDataReader["year"].ToString());
 
                         movies.Add(m);
                     }
@@ -86,8 +87,8 @@ namespace MovieRecommender.Controllers.Api
         }
 
         // GET api/Movies/recommendations/{userId}
-        [Route("recommendations/{userId}")]
-        public IHttpActionResult GetRecommendations([FromUri] int userId)
+        [Route("recommendations/{userIdPar}")]
+        public IHttpActionResult GetRecommendations([FromUri] int userIdPar)
         {
             List<Movie> movies = new List<Movie>();
             IDataModel model = null;
@@ -101,9 +102,9 @@ namespace MovieRecommender.Controllers.Api
 
                 DbDataReader ratingReader = ratingCommand.ExecuteReader();
 
-                Console.WriteLine("...........................................");
-                int userID = 0;
+                int userId = 0;
                 int loop = 0;
+                bool userexists = false;
                 List<object[]> templist = new List<object[]>();
                 while (ratingReader.Read())
                 {
@@ -112,8 +113,7 @@ namespace MovieRecommender.Controllers.Api
                     uval[1] = ratingReader["movieid"]; //movieid
                     uval[2] = ratingReader.GetInt32(2); //rating
 
-
-                    if (userID != ratingReader.GetInt32(0) && loop++ != 0)
+                    if (userId != ratingReader.GetInt32(0) && loop++ != 0)
                     {
                         IPreferenceArray usePref = new GenericUserPreferenceArray(templist.Count);
                         int j = 0;
@@ -126,7 +126,7 @@ namespace MovieRecommender.Controllers.Api
                             j++;
                         }
 
-                        preferences.Put(userID, usePref);
+                        preferences.Put(userId, usePref);
                         templist = new List<object[]>();
                     }
                     else
@@ -134,10 +134,14 @@ namespace MovieRecommender.Controllers.Api
                         templist.Add(uval);
                     }
 
-                    userID = ratingReader.GetInt32(0);
+                    userId = ratingReader.GetInt32(0);
+                    if (userId == userIdPar)
+                    {
+                        userexists = true;
+                    }
                 }
 
-                if (templist.Count > 0)
+                if (templist.Any())
                 {
                     IPreferenceArray usePref = new GenericUserPreferenceArray(templist.Count);
                     int k = 0;
@@ -150,7 +154,12 @@ namespace MovieRecommender.Controllers.Api
                         k++;
                     }
 
-                    preferences.Put(userID, usePref);
+                    preferences.Put(userId, usePref);
+                }
+
+                if (userexists == false)
+                {
+                    return NotFound();
                 }
 
                 //Building model done!
@@ -160,19 +169,20 @@ namespace MovieRecommender.Controllers.Api
                 //1.Creating UserSimilarity object.
                 IUserSimilarity usersimilarity = new LogLikelihoodSimilarity(model);
 
-                //2.Creating UserNeighbourHHood object.
+                //2.Creating UserNeighborhood object.
                 IUserNeighborhood userneighborhood = new NearestNUserNeighborhood(15, usersimilarity, model);
 
                 //3.Create UserRecomender
                 IUserBasedRecommender recommender = new GenericUserBasedRecommender(model, userneighborhood, usersimilarity);
 
-                var recommendations = recommender.Recommend(userId, 10);
+                var recommendations = recommender.Recommend(userIdPar, 10);
 
-                foreach (IRecommendedItem recommendation in recommendations)
-                {
-                    Console.WriteLine(recommendation);
-                }
                 var recMovieIds = recommendations.Select(n => n.GetItemID()).ToList();
+
+                if (!recMovieIds.Any())
+                {
+                    return NotFound();
+                }
 
                 OdbcCommand movieCommand = conn.CreateCommand();
                 movieCommand.CommandText = "SELECT * FROM movie where movieId in ("+ string.Join(",", recMovieIds)+");";
@@ -183,9 +193,9 @@ namespace MovieRecommender.Controllers.Api
                 {
                     Movie m=new Movie();
 
-                    m.MovieId = Convert.ToInt32(movieReader["movieid"]);
+                    m.MovieId = Int32.Parse(movieReader["movieid"].ToString());
                     m.Title = movieReader["title"].ToString(); //title
-                    m.Year = Convert.ToInt32(movieReader["year"]);
+                    m.Year = Int32.Parse(movieReader["year"].ToString());
                     m.Genre = movieReader["genre"].ToString();
 
                     movies.Add(m);
@@ -198,13 +208,50 @@ namespace MovieRecommender.Controllers.Api
             return Ok(movies);
         }
 
-        // GET api/<controller>/5
-        [Route("api/Movies/Rating")]
+        // GET api/Movies/Rating
+        [Route("Rating")]
         [HttpPost]
-        public IHttpActionResult PostRating(int userId)
+        public IHttpActionResult PostRating(Rating rating)
         {
-            Rating rate = new Rating();
-            return Created(new Uri(Request.RequestUri + "/" + userId), rate);
+            if (rating == null)
+            {
+                return NotFound();
+            }
+
+            using (OdbcConnection conn =
+    new OdbcConnection(connectionString: "DSN=Sample Microsoft Hive DSN;UID=admin;PWD=Password@123"))
+            {
+                conn.OpenAsync().Wait();
+                OdbcCommand userRatedcmd = conn.CreateCommand();
+                    userRatedcmd.CommandText = "SELECT * FROM rating where userId=" + rating.UserId +" and "+" movieid="+rating.MovieId+";";
+
+                    DbDataReader userRatedReader = userRatedcmd.ExecuteReader();
+
+                    if (!userRatedReader.Read())
+                    {
+                    OdbcCommand newuserRatecmd = conn.CreateCommand();
+                    //userId,movieId,rating
+                    newuserRatecmd.CommandText = "INSERT INTO rating VALUES ("+rating.UserId+","+rating.MovieId+","+rating.Preference+");";
+
+                        int result = newuserRatecmd.ExecuteNonQuery();
+
+                        if (result > 0)
+                        {
+                            return Created(new Uri(Request.RequestUri+""), rating);
+                        }
+                        else
+                        {
+                            return NotFound();
+
+                        }
+                    }
+                    else
+                    {
+                            return NotFound();
+                        
+                    }
+            }
+
         }
 
         // POST api/<controller>
