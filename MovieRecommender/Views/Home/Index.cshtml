@@ -41,98 +41,9 @@
 
 </div>
 
-<div class="row">
-    <div class="col-md-3" style="margin-bottom:15px">
 
-        @*<ul>
-            @{
-                foreach (var item in Model)
-                {
-                    <li>@item.Title (@item.Year) ...@item.Genre</li>
-                }
-            }
-
-        </ul>*@
-
-        <div>
-            <h2>Search Movie</h2>
-            <input type="text" id="movieTitle" />
-            <input type="button" value="Search" onclick="find();" />
-            <ul id="movies"/>
-            <p id="error"></p>
-        </div>
-
-        <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
-        <script>
-            var uri = 'api/movies';
-            function find() {
-                var title = $('#movieTitle').val();
-                    // Send an AJAX request
-                $.getJSON(uri + '/' + title, function() {
-                    console.log( "success" );
-                })
-                        .done(function(data) {
-                            // On success, 'data' contains a list of products.
-                            $.each(data,
-                                function(key, item) {
-                                    // Add a list item for the product.
-                                    $('<li>', { text: formatItem(item) }).appendTo($('#movies'));
-                                });
-                        }
-                        )
-                        .fail(function (jqXHR, textStatus, err) {
-                            $('#error').text('Error: ' + err);
-                        })
-      .always(function () {
-          console.log("complete");
-      });
-}
-            function formatItem(item) {
-                return item.title + ': $' + item.year + ': $' + item.genre;
-            }
-
-        </script>
-
-
-    </div>
-</div>
 
 @section scripts
 {
-    <script>
-        $(document).ready(function () {
-
-            $("#recommendMe").click(function () {
-                var userid = $("#userId").val();
-                var table = $("#recomMovies").DataTable({
-                    ajax: {
-                        url: "/api/Movies/recommendations/" + userid,
-                        dataSrc: ""
-                    },
-                    columns: [
-                        {
-                            data: "title",
-                            render: function (data, type, recommend) {
-                                return "<a target='_blank' href='http://www.imdb.com/title/tt" + recommend.movieId + "'>" + recommend.title + "</a>";
-                            }
-                        },
-
-                        {
-                            data: "genre",
-                            render: function (data) {
-                                return data;
-                            }
-                        },
-                         {
-                             data: "year",
-                             render: function (data) {
-                                 return data;
-                             }
-                         }
-                    ]
-                });
-            })
-
-        });
-    </script>
+@Scripts.Render("~/bundles/movies")
 }
