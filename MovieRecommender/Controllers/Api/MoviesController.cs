@@ -36,15 +36,15 @@ namespace MovieRecommender.Controllers.Api
                 {
                     cmd.CommandText = "SELECT * FROM movie;";
 
-                    DbDataReader ratingReader = cmd.ExecuteReader();
+                    DbDataReader movieDataReaderReader = cmd.ExecuteReader();
 
-                    while (ratingReader.Read())
+                    while (movieDataReaderReader.Read())
                     {
                         Movie m = new Movie();
-                        m.Genre = ratingReader["genre"].ToString();
-                        m.MovieId = Convert.ToInt32(ratingReader["movieid"]);
-                        m.Title = ratingReader["title"].ToString();
-                        m.Year = Convert.ToInt32(ratingReader["year"]);
+                        m.Genre = movieDataReaderReader["genre"].ToString();
+                        m.MovieId = Convert.ToInt32(movieDataReaderReader["movieid"]);
+                        m.Title = movieDataReaderReader["title"].ToString();
+                        m.Year = Convert.ToInt32(movieDataReaderReader["year"]);
 
                         movies.Add(m);
                     }
@@ -67,15 +67,15 @@ namespace MovieRecommender.Controllers.Api
                 {
                     cmd.CommandText = "SELECT * FROM movie where title LIKE '%"+title+"%';";
 
-                    DbDataReader ratingReader = cmd.ExecuteReader();
+                    DbDataReader movieDataReaderReader = cmd.ExecuteReader();
 
-                    while (ratingReader.Read())
+                    while (movieDataReaderReader.Read())
                     {
                         Movie m = new Movie();
-                        m.Genre = ratingReader["genre"].ToString();
-                        m.MovieId = Convert.ToInt32(ratingReader["movieid"]);
-                        m.Title = ratingReader["title"].ToString();
-                        m.Year = Convert.ToInt32(ratingReader["year"]);
+                        m.Genre = movieDataReaderReader["genre"].ToString();
+                        m.MovieId = Convert.ToInt32(movieDataReaderReader["movieid"]);
+                        m.Title = movieDataReaderReader["title"].ToString();
+                        m.Year = Convert.ToInt32(movieDataReaderReader["year"]);
 
                         movies.Add(m);
                     }
@@ -135,7 +135,6 @@ namespace MovieRecommender.Controllers.Api
                     }
 
                     userID = ratingReader.GetInt32(0);
-                    // Console.WriteLine(userReader.GetInt32(0) + ".........  " + userReader.GetString(1));
                 }
 
                 if (templist.Count > 0)
@@ -154,19 +153,17 @@ namespace MovieRecommender.Controllers.Api
                     preferences.Put(userID, usePref);
                 }
 
+                //Building model done!
                 model = new GenericDataModel(preferences);
 
-
-                //IDataModel model = await GetMovieDataModel();
-                Console.WriteLine("Building model done!");
-                Console.WriteLine("Calculating Recommendation...");
-                //Creating UserSimilarity object.
+                //Calculating Recommendation...
+                //1.Creating UserSimilarity object.
                 IUserSimilarity usersimilarity = new LogLikelihoodSimilarity(model);
 
-                //Creating UserNeighbourHHood object.
+                //2.Creating UserNeighbourHHood object.
                 IUserNeighborhood userneighborhood = new NearestNUserNeighborhood(15, usersimilarity, model);
 
-                //Create UserRecomender
+                //3.Create UserRecomender
                 IUserBasedRecommender recommender = new GenericUserBasedRecommender(model, userneighborhood, usersimilarity);
 
                 var recommendations = recommender.Recommend(userId, 10);
@@ -182,8 +179,6 @@ namespace MovieRecommender.Controllers.Api
 
                 DbDataReader movieReader = movieCommand.ExecuteReader();
 
-                Console.WriteLine("...........................................");
-
                 while (movieReader.Read())
                 {
                     Movie m=new Movie();
@@ -196,7 +191,6 @@ namespace MovieRecommender.Controllers.Api
                     movies.Add(m);
 
                 }
-
 
 
             }
