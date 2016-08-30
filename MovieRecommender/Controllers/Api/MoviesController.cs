@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Results;
 using MovieRecommender.Models;
 using Newtonsoft.Json.Linq;
 using NReco.CF.Taste.Impl.Common;
@@ -219,37 +220,32 @@ namespace MovieRecommender.Controllers.Api
             }
 
             using (OdbcConnection conn =
-    new OdbcConnection(connectionString: "DSN=Sample Microsoft Hive DSN;UID=admin;PWD=Password@123"))
+                new OdbcConnection(connectionString: "DSN=Sample Microsoft Hive DSN;UID=admin;PWD=Password@123"))
             {
                 conn.OpenAsync().Wait();
                 OdbcCommand userRatedcmd = conn.CreateCommand();
-                    userRatedcmd.CommandText = "SELECT * FROM rating where userId=" + rating.UserId +" and "+" movieid="+rating.MovieId+";";
+                userRatedcmd.CommandText = "SELECT * FROM rating where userId=" + rating.UserId + " and " + " movieid=" +
+                                           rating.MovieId + ";";
 
-                    DbDataReader userRatedReader = userRatedcmd.ExecuteReader();
+                DbDataReader userRatedReader = userRatedcmd.ExecuteReader();
 
-                    if (!userRatedReader.Read())
-                    {
+                if (!userRatedReader.Read())
+                {
                     OdbcCommand newuserRatecmd = conn.CreateCommand();
                     //userId,movieId,rating
-                    newuserRatecmd.CommandText = "INSERT INTO rating VALUES ("+rating.UserId+","+rating.MovieId+","+rating.Preference+");";
+                    newuserRatecmd.CommandText = "INSERT INTO TABLE rating VALUES (" + rating.UserId + "," +
+                                                 rating.MovieId + "," + rating.Preference + ");";
 
-                        int result = newuserRatecmd.ExecuteNonQuery();
+                    int result = newuserRatecmd.ExecuteNonQuery();
 
-                        if (result > 0)
-                        {
-                            return Created(new Uri(Request.RequestUri+""), rating);
-                        }
-                        else
-                        {
-                            return NotFound();
+                    return Ok();
+                  
+                }
+                else
+                {
+                    return NotFound();
 
-                        }
-                    }
-                    else
-                    {
-                            return NotFound();
-                        
-                    }
+                }
             }
 
         }
