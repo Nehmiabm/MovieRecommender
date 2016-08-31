@@ -17,24 +17,45 @@
                     <input class="form-control col-sm-4" type="text" id="uid"/>
                 </div>
                 <div class="row form-group">
-                   <label class="control-label col-sm-1" for="title">Movie Title:</label>
-                    <input class="form-control col-sm-4" type="text" id="title" />
+                    <label class="control-label col-sm-1" for="title">Movie Title:</label>
+                    <input class="form-control col-sm-4" type="text" id="title"/>
                     <button type="button" class="btn btn-success col-sm-1" id="search"><span class="fa fa-search">Search</span></button>
                 </div>
                 <div>
                     <table id="moviesTable" class="table table-bordered table-hover">
                         <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Genre</th>
-                                <th>Year</th>
-                                <th>Rating</th>
-                            </tr>
+                        <tr>
+                            <th>Title</th>
+                            <th>Genre</th>
+                            <th>Year</th>
+                            <th>Rating</th>
+                        </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
                 </div>
-               
+
+            </div>
+
+        </div>
+        <div id="ratingModal" class="modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Rate Movie</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="control-label" for="rateuserId">User Id:</label>
+                            <div class="form-control"><input id="rateuserId" type="text" /></div>
+                        </div>
+                        <div class="my-rating"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="tab-pane fade" id="recommendation">
