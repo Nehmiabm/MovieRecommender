@@ -160,7 +160,7 @@ namespace MovieRecommender.Controllers.Api
 
                 if (userexists == false) // user doesn't have preference history
                 {
-                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, " This user has no preferences");
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, " This user does not exist or has no preference history");
                 }
 
                 //Building model done!
@@ -192,7 +192,7 @@ namespace MovieRecommender.Controllers.Api
 
                 while (movieReader.Read())
                 {
-                    Movie m=new Movie();
+                    var m=new Movie();
 
                     m.MovieId = Int32.Parse(movieReader["movieid"].ToString());
                     m.Title = movieReader["title"].ToString(); //title
