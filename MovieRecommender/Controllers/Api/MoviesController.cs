@@ -89,7 +89,7 @@ namespace MovieRecommender.Controllers.Api
 
         // GET api/Movies/recommendations/{userId}
         [Route("recommendations/{userIdPar}")]
-        public IHttpActionResult GetRecommendations([FromUri] int userIdPar)
+        public HttpResponseMessage GetRecommendations([FromUri] int userIdPar)
         {
             List<Movie> movies = new List<Movie>();
             IDataModel model = null;
@@ -158,9 +158,9 @@ namespace MovieRecommender.Controllers.Api
                     preferences.Put(userId, usePref);
                 }
 
-                if (userexists == false)
+                if (userexists == false) // user doesn't have preference history
                 {
-                    return NotFound();
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, " This user has no preferences");
                 }
 
                 //Building model done!
@@ -182,7 +182,7 @@ namespace MovieRecommender.Controllers.Api
 
                 if (!recMovieIds.Any())
                 {
-                    return NotFound();
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, " Recommendation not found for this user"); 
                 }
 
                 OdbcCommand movieCommand = conn.CreateCommand();
@@ -206,7 +206,7 @@ namespace MovieRecommender.Controllers.Api
 
             }
 
-            return Ok(movies);
+            return Request.CreateResponse(HttpStatusCode.OK, movies);
         }
 
         // GET api/Movies/Rating
@@ -243,8 +243,6 @@ namespace MovieRecommender.Controllers.Api
                 }
 
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, " User has already rated this movie. Cannot re-rate.");
-
-
 
             }
 
