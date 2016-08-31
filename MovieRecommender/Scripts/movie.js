@@ -43,11 +43,6 @@ $(document).ready(function () {
     $("#search")
         .click(function () {
 
-
-            var tb = $('#moviesTable').DataTable();
-
-            tb.clear().draw();
-
             var title = $("#title").val();
             var table = $("#moviesTable")
                 .DataTable({
@@ -121,11 +116,15 @@ $(document).ready(function () {
                                 bootbox.alert("Rate posted successfully!");
                                 $el.starRating('setRating', 0);
                                 $("#ratingModal").modal("hide");
+                                var table = $('#moviesTable').DataTable();
+                                table.rows().remove().draw();
                             },
                             error: function (jqXHR, textStatus, errorThrown) {
                                 bootbox.alert("Error saving movie rate:" + jqXHR.responseText);
                                 $el.starRating('setRating', 0);
                                 $("#ratingModal").modal("hide");
+                                var table = $('#moviesTable').DataTable();
+                                table.rows().remove().draw();
                                 
                             },
                             data: ratingJson
