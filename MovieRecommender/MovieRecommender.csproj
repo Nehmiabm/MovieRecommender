@@ -341,6 +341,7 @@
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\logo.jpg" />
     <Content Include="Content\movielogo.png" />
+    <Content Include="Content\spinner.gif" />
     <Content Include="Content\star-rating-svg.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />

@@ -1,6 +1,17 @@
 ﻿
 $(document).ready(function () {
 
+
+    //Show loading 
+    $(document).ajaxSend(function (event, request, settings) {
+        $('#loading-indicator').show();
+    });
+
+    $(document)
+        .ajaxComplete(function (event, request, settings) {
+            $('#loading-indicator').hide();
+        });
+
     //Recommend movies
     $("#recommendMe").click(function () {
         var userid = $("#userId").val();
@@ -43,6 +54,7 @@ $(document).ready(function () {
     $("#search")
         .click(function () {
 
+            $("#moviesTable").DataTable().rows().remove().draw();
             var title = $("#title").val();
             var table = $("#moviesTable")
                 .DataTable({
@@ -79,13 +91,13 @@ $(document).ready(function () {
                             render: function(data) {
                                 return "<button class='btn-link js-rate' data-movie-id=" +
                                     data +
-                                    "><span class='glyphicon glyphicon-star'><p>Rate</p></span></button>";
+                                    "><span class='glyphicon glyphicon-star'>Rate</span></button>";
                             }
                         }
                     ]
                 });
         });
-
+    var mid;
     //Show Rating Dialog
     $("#moviesTable")
         .on("click",
@@ -93,7 +105,7 @@ $(document).ready(function () {
             function () {
                 $("#ratingModal").modal("show");
                 var button = $(this);
-                var mid = button.attr("data-movie-id");
+                mid = button.attr("data-movie-id");
                
                 $(".my-rating").starRating({
                     starSize: 25,
@@ -116,15 +128,13 @@ $(document).ready(function () {
                                 bootbox.alert("Rate posted successfully!");
                                 $el.starRating('setRating', 0);
                                 $("#ratingModal").modal("hide");
-                                var table = $('#moviesTable').DataTable();
-                                table.rows().remove().draw();
+                                
                             },
                             error: function (jqXHR, textStatus, errorThrown) {
                                 bootbox.alert("Error saving movie rate:" + jqXHR.responseText);
                                 $el.starRating('setRating', 0);
+                               // $("#moviesTable").off("click", ".js-rate");
                                 $("#ratingModal").modal("hide");
-                                var table = $('#moviesTable').DataTable();
-                                table.rows().remove().draw();
                                 
                             },
                             data: ratingJson
@@ -135,3 +145,4 @@ $(document).ready(function () {
             });
 
 });
+

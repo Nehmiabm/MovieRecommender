@@ -20,5 +20,10 @@
 input,
 select,
 textarea {
-    max-width: 280px;
+    max-width: 250px;
+}
+#loading-indicator {
+  position: absolute;
+  left: 230px;
+  top: 176px;
 }
