@@ -88,6 +88,7 @@ $(document).ready(function () {
                
                 $(".my-rating").starRating({
                     starSize: 25,
+                    disableAfterRate:false,
                     totalStars: 10,
                     initialRating:0,
                     callback: function (currentRating, $el) {
@@ -104,10 +105,11 @@ $(document).ready(function () {
                             datatype: 'json',
                             success: function() {
                                 bootbox.alert("Rate posted successfully!");
+                                $el.starRating('setRating', 0);
                                 $("#ratingModal").modal("hide");
                             },
                             error: function (jqXHR, textStatus, errorThrown) {
-                                bootbox.alert("Error saving movie rate:" + errorThrown);
+                                bootbox.alert("Error saving movie rate:" + jqXHR.responseText);
                                 $el.starRating('setRating', 0);
                                 $("#ratingModal").modal("hide");
                                 
