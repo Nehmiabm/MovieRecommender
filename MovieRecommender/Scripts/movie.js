@@ -41,7 +41,13 @@ $(document).ready(function () {
 
     //Search movies
     $("#search")
-        .click(function() {
+        .click(function () {
+
+
+            var tb = $('#moviesTable').DataTable();
+
+            tb.clear().draw();
+
             var title = $("#title").val();
             var table = $("#moviesTable")
                 .DataTable({
