@@ -212,11 +212,11 @@ namespace MovieRecommender.Controllers.Api
         // GET api/Movies/Rating
         [Route("Rating")]
         [HttpPost]
-        public IHttpActionResult PostRating(Rating rating)
+        public HttpResponseMessage PostRating(Rating rating)
         {
             if (rating == null)
             {
-                return NotFound();
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, " Rating is invalid/empty");
             }
 
             using (OdbcConnection conn =
@@ -238,14 +238,14 @@ namespace MovieRecommender.Controllers.Api
 
                     int result = newuserRatecmd.ExecuteNonQuery();
 
-                    return Ok();
-                  
-                }
-                else
-                {
-                    return NotFound();
+                    return Request.CreateResponse<Rating>(HttpStatusCode.OK, rating);
 
                 }
+
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, " User has already rated this movie. Cannot re-rate.");
+
+
+
             }
 
         }
