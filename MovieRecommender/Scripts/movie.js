@@ -9,7 +9,11 @@ $(document).ready(function () {
             ajax: {
                 
                 url: "/api/Movies/recommendations/" + userid,
-                dataSrc: ""
+                dataSrc: "",
+                error: function (jqXHR, textStatus, errorThrown) {
+                    bootbox.alert("Error calculating recommendations:" + jqXHR.responseText);
+
+                }
             },
             columns: [
                 {
@@ -44,7 +48,11 @@ $(document).ready(function () {
                     "bDestroy": true,
                     ajax: {
                         url: "/api/Movies/" + title,
-                        dataSrc: ""
+                        dataSrc: "",
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            bootbox.alert("Error searching movies:" + jqXHR.responseText);
+
+                        }
                     },
                     columns: [
                         {
