@@ -23,7 +23,6 @@ $(document).ready(function () {
                 dataSrc: "",
                 error: function (jqXHR, textStatus, errorThrown) {
                     bootbox.alert("Error calculating recommendations:" + jqXHR.responseText);
-
                 }
             },
             columns: [
@@ -64,7 +63,7 @@ $(document).ready(function () {
                         dataSrc: "",
                         error: function (jqXHR, textStatus, errorThrown) {
                             bootbox.alert("Error searching movies:" + jqXHR.responseText);
-
+                            $("#moviesTable").DataTable().rows().remove().draw();
                         }
                     },
                     columns: [
